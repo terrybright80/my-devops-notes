@@ -39,18 +39,18 @@ No component talks to another directly — everything goes via the API server
 🔹 etcd
 •	Distributed key-value store
 •	Stores cluster state:
-o	Pods
-o	Secrets
-o	ConfigMaps
-o	Node info
+	a)Pods
+	b)Secrets
+	c)ConfigMaps
+	d)Node info
 🛑 If etcd is lost, the cluster is lost.
 
 🔹 Scheduler
 •	Decides which node a Pod runs on
 •	Considers:
-o	CPU & memory
-o	Node taints & tolerations
-o	Affinity rules
+	a) CPU & memory
+    b) Node taints & tolerations
+	c) Affinity rules
 
 🔹 Controller Manager
 Ensures desired state = actual state
@@ -126,7 +126,7 @@ User / CI-CD
      │
      ▼
  Pod Running 
-________________________________________
+
 How Services Expose Pods
         ┌──────────────┐
         │   Service    │
