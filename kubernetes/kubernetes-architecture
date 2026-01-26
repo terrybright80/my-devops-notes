@@ -1,0 +1,164 @@
+ High-level Kubernetes Architecture
+At the highest level, Kubernetes has two major parts:
+•	Control Plane (Master) – the brain 🧠
+•	Worker Nodes – where your apps actually run 
+                ┌────────────────────────┐
+                │     Control Plane      │
+                │  (Kubernetes Master)   │
+                └──────────┬─────────────┘
+                           │
+        ┌──────────────────┴──────────────────┐
+        │                                     │
+┌───────────────┐                    ┌───────────────┐
+│  Worker Node  │                    │  Worker Node  │
+│   (Node 1)    │                    │   (Node 2)    │
+└───────────────┘                    └───────────────┘
+________________________________________
+Control Plane Components (The Brain)
+The Control Plane makes all decisions in the cluster.
+┌──────────────────────────────────────────────┐
+│              CONTROL PLANE                   │
+│                                              │
+│  ┌──────────┐   ┌────────────┐   ┌─────────┐ │
+│  │ API      │   │ Scheduler  │   │ etcd    │ │
+│  │ Server   │   │            │   │         │ │
+│  └──────────┘   └────────────┘   └─────────┘ │
+│        │               │               │     │
+│  ┌────────────┐   ┌──────────────┐           │
+│  │ Controller │   │ Cloud        │           │
+│  │ Manager    │   │ Controller   │           │
+│  └────────────┘   └──────────────┘           │
+└──────────────────────────────────────────────┘
+
+API Server
+•	Entry point to Kubernetes
+•	All commands (kubectl, CI/CD, UI) talk to it
+•	Validates & processes requests
+No component talks to another directly — everything goes via the API server
+
+🔹 etcd
+•	Distributed key-value store
+•	Stores cluster state:
+o	Pods
+o	Secrets
+o	ConfigMaps
+o	Node info
+🛑 If etcd is lost, the cluster is lost.
+
+🔹 Scheduler
+•	Decides which node a Pod runs on
+•	Considers:
+o	CPU & memory
+o	Node taints & tolerations
+o	Affinity rules
+
+🔹 Controller Manager
+Ensures desired state = actual state
+Examples:
+•	Node Controller
+•	ReplicaSet Controller
+•	Deployment Controller
+“You want 3 replicas? I’ll keep creating Pods until you have 3.”
+
+🔹 Cloud Controller Manager (Optional)
+•	Talks to cloud providers (AWS, GCP, Azure)
+•	Manages:
+o	Load Balancers
+o	Volumes
+o	Node lifecycle
+Worker Node Architecture (Where Apps Run)
+Each worker node runs your workloads.
+┌──────────────────────────────────────────┐
+│              WORKER NODE                 │
+│                                          │
+│  ┌──────────┐   ┌─────────────────────┐  │
+│  │ kubelet  │   │   Container Runtime │  │
+│  │          │   │  (Docker/containerd)│  │
+│  └──────────┘   └─────────────────────┘  │
+│                                          │
+│  ┌────────────────────────────────────┐  │
+│  │              Pods                  │  │
+│  │  ┌──────────┐   ┌──────────┐       │  │
+│  │  │Container │   │Container │       │  │
+│  │  └──────────┘   └──────────┘       │  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌──────────┐                            │
+│  │kube-proxy│                            │
+│  └──────────┘                            │
+└──────────────────────────────────────────┘
+
+🔹 kubnelet
+•	Agent running on every node
+•	Talks to API Server
+•	Ensures containers are running as defined
+
+🔹 Container Runtime
+•	Actually runs containers
+•	Examples:
+o	containerd
+o	CRI-O
+o	(Docker via containerd)
+
+🔹 kube-proxy
+•	Handles networking
+•	Enables:
+o	Service → Pod communication
+o	Load balancing via iptables/IPVS
+
+Pod & Networking Flow (Very Important)
+User / CI-CD
+     │
+     ▼
+ kubectl apply
+     │
+     ▼
+ API Server
+     │
+     ▼
+ Scheduler ──► selects node
+     │
+     ▼
+ kubelet (on node)
+     │
+     ▼
+ Container Runtime
+     │
+     ▼
+ Pod Running 🎉
+________________________________________
+How Services Expose Pods
+        ┌──────────────┐
+        │   Service    │
+        │ (ClusterIP)  │
+        └──────┬───────┘
+               │
+     ┌─────────┴─────────┐
+     │                   │
+┌──────────┐       ┌──────────┐
+│  Pod A   │       │  Pod B   │
+└──────────┘       └──────────┘
+•	Service provides:
+o	Stable IP
+o	Load balancing
+•	Pods can die & restart, Service stays.
+Kubernetes Architecture in One Diagram
+               ┌────────────────────────────┐
+               │        Control Plane       │
+               │                            │
+               │  API Server  Scheduler     │
+               │  Controller  etcd          │
+               └─────────────┬──────────────┘
+                             │
+           ┌─────────────────┴─────────────────┐
+           │                                   │
+   ┌───────────────┐                   ┌───────────────┐
+   │  Worker Node  │                   │  Worker Node  │
+   │               │                   │               │
+   │ kubelet       │                   │ kubelet       │
+   │ kube-proxy    │                   │ kube-proxy    │
+   │ Pods          │                   │ Pods          │
+   └───────────────┘                   └───────────────┘
+
+One-line Summary
+Kubernetes = Control Plane decides, Worker Nodes execute, etcd remembers, kubelet enforces, and Services connect everything.
