@@ -125,7 +125,7 @@ User / CI-CD
  Container Runtime
      │
      ▼
- Pod Running 🎉
+ Pod Running 
 ________________________________________
 How Services Expose Pods
         ┌──────────────┐
@@ -159,6 +159,13 @@ Kubernetes Architecture in One Diagram
    │ kube-proxy    │                   │ kube-proxy    │
    │ Pods          │                   │ Pods          │
    └───────────────┘                   └───────────────┘
+
+Summary of Workflow
+User sends a command (via kubectl) to the API Server.
+API Server records the intent in etcd.
+Scheduler sees the new requirement, picks a Worker Node, and tells the API Server.
+Kubelet on that specific worker node sees the assignment and instructs the Container Runtime to pull the image and start the container.
+Kube-proxy ensures the network is updated so the new container can be reached
 
 One-line Summary
 Kubernetes = Control Plane decides, Worker Nodes execute, etcd remembers, kubelet enforces, and Services connect everything.
