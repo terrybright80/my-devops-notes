@@ -11,6 +11,7 @@ This repository contains my personal DevOps learning notes and practical explana
 - Kubernetes
 - Cloud (AWS)
 - Infrastructure as Code (Terraform)
+- ansible
 
 ## Purpose
 - Personal reference
