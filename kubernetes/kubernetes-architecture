@@ -88,7 +88,7 @@ Each worker node runs your workloads.
 │  └──────────┘                            │
 └──────────────────────────────────────────┘
 
-🔹 kubnelet
+🔹 kubelet
 •	Agent running on every node
 •	Talks to API Server
 •	Ensures containers are running as defined

@@ -1,0 +1,25 @@
+Developer
+   │
+   ▼
+GitHub Repository
+   │
+   ▼
+CI Pipeline (GitHub Actions / Jenkins)
+   │
+   ▼
+Docker Build & Push
+   │
+   ▼
+Container Registry
+   │
+   ▼
+Argo CD (GitOps)
+   │
+   ▼
+Kubernetes Cluster
+   │
+   ▼
+Application Services
+   │
+   ▼
+Monitoring (Prometheus + Grafana)
